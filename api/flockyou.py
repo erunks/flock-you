@@ -634,6 +634,10 @@ def connect_flock_serial(port = None):
     global flock_device_connected, flock_device_port, flock_serial_connection
 
     port = port if port else settings.get('flock_port')
+    if not port:
+        printf("No port specified for Flock You device")
+        return
+
     print(f"Connecting to Flock You device on port: {port}")
 
     # Create persistent connection to the port
