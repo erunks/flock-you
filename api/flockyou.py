@@ -635,7 +635,7 @@ def connect_flock_serial(port = None):
 
     port = port if port else settings.get('flock_port')
     if not port:
-        printf("No port specified for Flock You device")
+        print("No port specified for Flock You device")
         return
 
     print(f"Connecting to Flock You device on port: {port}")
