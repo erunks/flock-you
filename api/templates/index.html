@@ -1858,6 +1858,10 @@
                     updateGpsStatus(data.gps_connected);
                     
                     if (data.flock_connected) {
+                        const flockDeviceSelect = document.getElementById('flockDeviceSelect');
+                        if (flockDeviceSelect.value === '' && data.flock_port) {
+                            flockDeviceSelect.value = data.flock_port;
+                        }
                         document.getElementById('connectFlockBtn').style.display = 'none';
                         document.getElementById('disconnectFlockBtn').style.display = 'inline-block';
                     }

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_file
 import json
 import csv
+import sys
 import os
 from datetime import datetime
 import time
@@ -18,6 +19,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'flockyou_dev_key_2024')
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', logger=True, engineio_logger=True)
 
 # Global variables
+AUTO_SCAN = '--auto-scan' in sys.argv
 detections = []
 cumulative_detections = []
 session_start_time = datetime.now()
@@ -627,6 +629,23 @@ def attempt_reconnect_gps():
     thread = threading.Thread(target=reconnect_thread, daemon=True)
     thread.start()
 
+def connect_flock_serial(port = None):
+    """Connect to Flock You device"""
+    global flock_device_connected, flock_device_port, flock_serial_connection
+
+    port = port if port else settings.get('flock_port')
+    print(f"Connecting to Flock You device on port: {port}")
+
+    # Create persistent connection to the port
+    flock_serial_connection = serial.Serial(port, 115200, timeout=1)
+    with connection_lock:
+        flock_device_connected = True
+    flock_device_port = port
+
+    # Start reading thread
+    flock_thread = threading.Thread(target=flock_reader, daemon=True)
+    flock_thread.start()
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -727,15 +746,7 @@ def connect_flock():
     port = data.get('port')
     
     try:
-        # Create persistent connection to the port
-        flock_serial_connection = serial.Serial(port, 115200, timeout=1)
-        with connection_lock:
-            flock_device_connected = True
-        flock_device_port = port
-        
-        # Start reading thread
-        flock_thread = threading.Thread(target=flock_reader, daemon=True)
-        flock_thread.start()
+        connect_flock_serial(port)
         
         return jsonify({'status': 'success', 'message': f'Connected to Flock You device on {port}'})
     except Exception as e:
@@ -1285,6 +1296,10 @@ if __name__ == '__main__':
     load_oui_database()
     load_cumulative_detections()
     load_settings()
+
+    if AUTO_SCAN:
+        print("Auto connecting to Flock You device...")
+        connect_flock_serial()
     
     # Start connection monitor thread
     monitor_thread = threading.Thread(target=connection_monitor, daemon=True)
