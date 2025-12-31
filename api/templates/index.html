@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flock You - Detection Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href={{ url_for('static', filename='Orbitron.css') }} rel="stylesheet">
+    <script src={{ url_for('static', filename='socket.io.js') }}></script>
+    <script src={{ url_for('static', filename='chart.js') }}></script>
     <style>
         * {
             margin: 0;
@@ -1480,8 +1480,8 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src={{ url_for('static', filename='leaflet.js') }}></script>
+    <link rel="stylesheet" href={{ url_for('static', filename='leaflet.css') }} />
     <script>
         const socket = io({
             transports: ['websocket', 'polling'],
